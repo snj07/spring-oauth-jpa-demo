@@ -5,7 +5,7 @@
  * For more details take a look at the Java Libraries chapter in the Gradle
  * user guide available at https://docs.gradle.org/4.3/userguide/java_library_plugin.html
  */
-
+apply plugin: 'java-library'
 buildscript {
     project.ext {
         bootVersion = '2.0.5.RELEASE'
@@ -25,7 +25,7 @@ buildscript {
 }
 
 // Apply the java-library plugin to add support for Java Library
-apply plugin: 'java-library'
+
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -57,12 +57,11 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-web:${project.bootVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa:${project.bootVersion}"
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest', version: project.bootVersion
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: project.bootVersion
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: project.bootVersion
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: project.bootVersion
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: project.bootVersion
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: project.bootVersion
-    //providedRuntime "org.springframework.boot:spring-boot-starter-tomcat:${project.bootVersion}"
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-oauth2', version: '2.0.0.RELEASE'
 
     //swagger
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
@@ -78,12 +77,14 @@ dependencies {
     implementation 'org.hibernate:hibernate-validator:5.4.1.Final'
     implementation 'org.hibernate.common:hibernate-commons-annotations:5.0.1.Final'
     implementation 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
-    compile("com.h2database:h2")
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+    runtime ("com.h2database:h2")
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     testImplementation "org.springframework:spring-test:${project.bootVersion}"
     testImplementation "org.springframework.boot:spring-boot-starter-test:${project.bootVersion}"
 }
+
+
 
