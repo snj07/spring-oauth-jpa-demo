@@ -1,4 +1,4 @@
-package entities;
+package com.snj.entities;
 
 
 import io.swagger.annotations.ApiModelProperty;

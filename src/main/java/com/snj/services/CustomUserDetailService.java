@@ -1,11 +1,11 @@
-package services;
+package com.snj.services;
 
+import com.snj.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import repositories.UserRepository;
 
 import java.util.stream.Collectors;
 
