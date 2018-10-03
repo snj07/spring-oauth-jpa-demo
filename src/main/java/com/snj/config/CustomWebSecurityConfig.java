@@ -1,14 +1,10 @@
 package com.snj.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,12 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@EnableOAuth2Sso
-@EnableAutoConfiguration
-public class CustomWebSecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity(debug = true)
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+public class CustomWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -48,15 +41,15 @@ public class CustomWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
     /*
-    * https://github.com/spring-projects/spring-boot/issues/11136
-    * Expose it manually (there is bug)
-    *
-    * */
+     * https://github.com/spring-projects/spring-boot/issues/11136
+     * Expose it manually (there is bug)
+     *
+     * */
 
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        return authenticationManager();
+        return super.authenticationManagerBean();
     }
 }
