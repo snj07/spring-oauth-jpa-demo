@@ -18,6 +18,16 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 @EnableAuthorizationServer
 public class CustomAuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
+    private static final String CLIENT_ID="my-trusted-client";
+    private static final String GRANT_TYPE_PASSWORD = "password";
+    private static final String GRANT_TYPE_CLIENT_CREDENTIALS ="client_credentials";
+
+    private static final String SCOPE_READ = "read";
+    private static final String SCOPE_WRITE = "write";
+    private static final String SCOPE_TRUST = "trust";
+    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 1*60*60;
+    static final int REFRESH_TOKEN_VALIDITY_SECONDS = 6*60*60;
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -32,12 +42,13 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
                 .inMemory()
-                .withClient("my-trusted-client")
-                .authorizedGrantTypes("client_credentials", "password")
+                .withClient(CLIENT_ID)
+                .authorizedGrantTypes(GRANT_TYPE_CLIENT_CREDENTIALS, GRANT_TYPE_PASSWORD)
                 .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-                .scopes("read", "write", "trust")
+                .scopes(SCOPE_READ, SCOPE_WRITE, SCOPE_TRUST)
                 .resourceIds("oauth2-resource")
-                .accessTokenValiditySeconds(5000)
+                .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
+                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)
                 .secret(passwordEncoder.encode("password"));
     }
 
