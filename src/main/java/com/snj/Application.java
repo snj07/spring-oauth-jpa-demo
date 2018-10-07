@@ -18,10 +18,10 @@ public class Application {
     @Bean
     public CommandLineRunner setupDefaultUser(UserService service) {
         return args -> {
-            service.save(new User(
+            service.save(new User(1,
                     "user",
                     "password",
-                    Arrays.asList(new Role("USER"), new Role("ANONYMOUS")),//roles
+                    Arrays.asList(new Role(1,"USER"), new Role(2, "ADMIN")),//roles
                     true
             ));
         };

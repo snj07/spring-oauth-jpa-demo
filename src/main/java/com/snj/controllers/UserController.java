@@ -23,13 +23,13 @@ public class UserController {
         return userService.findAll();
     }*/
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
     public void create(@RequestBody User user) {
         userService.save(user);
     }
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
     public String delete(@PathVariable(value = "id") Long id){
-      //  userService.delete(id);
+        userService.deleteUser(id);
         return "success";
     }
 
