@@ -20,6 +20,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Iterable<User> findAll() {
+         return userRepository.findAll();
+    }
+
     public void deleteUser(long id) {
         userRepository.deleteById(id);
     }
