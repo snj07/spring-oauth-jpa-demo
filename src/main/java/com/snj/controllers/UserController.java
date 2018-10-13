@@ -1,12 +1,9 @@
 package com.snj.controllers;
 
 import com.snj.entities.User;
-import com.snj.repositories.UserRepository;
 import com.snj.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class UserController {

@@ -36,6 +36,7 @@ public class CustomWebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/oauth/token").permitAll()
+                .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()

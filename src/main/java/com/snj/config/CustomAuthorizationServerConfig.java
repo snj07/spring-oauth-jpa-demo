@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 public class CustomAuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private static final String CLIENT_ID="my-trusted-client";
+    private static final String CLIENT_SECRET="secret";
     private static final String GRANT_TYPE_PASSWORD = "password";
     private static final String GRANT_TYPE_CLIENT_CREDENTIALS ="client_credentials";
 
@@ -53,7 +54,7 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
                 .resourceIds("oauth2-resource")
                 .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
                 .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS)
-                .secret(passwordEncoder.encode("password"));
+                .secret(passwordEncoder.encode(CLIENT_SECRET));
     }
 
 
@@ -65,7 +66,10 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.checkTokenAccess("isAuthenticated()");
+        security.checkTokenAccess("isAuthenticated()")
+                .tokenKeyAccess("permitAll()");
+
+        ;
     }
 
 
