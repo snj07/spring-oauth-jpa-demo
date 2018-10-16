@@ -15,7 +15,7 @@ import java.util.Arrays;
 @SpringBootApplication
 public class Application {
 
-    @Bean
+  /*  @Bean
     public CommandLineRunner setupDefaultUser(UserService service) {
         return args -> {
             service.save(new User(1,
@@ -25,7 +25,7 @@ public class Application {
                     true
             ));
         };
-    }
+    }*/
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
