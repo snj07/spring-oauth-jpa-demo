@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service("userDetailsService")
 public class CustomUserDetailService implements UserDetailsService {
+
     @Autowired
     private UserRepository userRepository;
 

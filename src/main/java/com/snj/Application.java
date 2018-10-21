@@ -14,14 +14,14 @@ import java.util.Arrays;
 
 @SpringBootApplication
 public class Application {
-
+//
 //    @Bean
 //    public CommandLineRunner setupDefaultUser(UserService service) {
 //        return args -> {
 //            service.save(new User(1,
-//                    "user",
+//                    "admin",
 //                    "password",
-//                    Arrays.asList(new Role(1,"USER"), new Role(2, "ADMIN")),//roles
+//                    Arrays.asList(new Role(1,"ROLE_ADMIN"), new Role(2, "ROLE_EMPLOYEE")),//roles
 //                    true
 //            ));
 //        };

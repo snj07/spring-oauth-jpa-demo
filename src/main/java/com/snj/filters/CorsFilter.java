@@ -12,7 +12,7 @@ import java.io.IOException;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 
-public class SimpleCorsFilter implements Filter {
+public class CorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig fc) throws ServletException {

@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
@@ -27,7 +28,6 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 /*
  *  CustomAuthorizationServerConfig generates tokens specific to a client(it can be other spring boot micro service)
  */
-
 
 @Configuration
 @EnableAuthorizationServer
@@ -53,6 +53,7 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Autowired
     private CustomUserDetailService userDetailsService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -69,10 +70,11 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     @Value("${config.oauth2.resource.jwt.key-pair.alias}")
     private String keyPairAlias;
 
-    //    @Bean
-//    public UserDetailsService userDetailsService(){
-//        return new CustomUserDetailService();
-//    }
+    @Bean("userDetailService")
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailService();
+    }
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
@@ -118,11 +120,16 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     public DefaultTokenServices tokenServices() {
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         defaultTokenServices.setTokenStore(tokenStore());
-//        defaultTokenServices.setClientDetailsService(clientDetailsService);
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenEnhancer(accessTokenConverter());
         return defaultTokenServices;
     }
+
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new CustomTokenEnhancer();
+    }
+
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
