@@ -1,12 +1,15 @@
 package com.snj.config;
 
 import com.snj.services.CustomUserDetailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +22,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 /*
  *  CustomAuthorizationServerConfig generates tokens specific to a client(it can be other spring boot micro service)
@@ -39,8 +43,9 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     private static final String SCOPE_READ = "read";
     private static final String SCOPE_WRITE = "write";
     private static final String SCOPE_TRUST = "trust";
-//    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 1*60*60;
-//    static final int REFRESH_TOKEN_VALIDITY_SECONDS = 6*60*60;
+
+
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Qualifier("authenticationManagerBean")
     @Autowired
@@ -55,14 +60,14 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     @Value("${config.oauth2.tokenTimeout}")
     private int ACCESS_TOKEN_VALIDITY_SECONDS;
 
-    @Value("${config.oauth2.tokenTimeout}")
+    @Value("${config.oauth2.tokenValidity}")
     private int REFRESH_TOKEN_VALIDITY_SECONDS;
 
-    @Value("${config.oauth2.privateKey}")
-    private String privateKey;
+    @Value("${config.oauth2.resource.jwt.key-pair.store-password}")
+    private String keyStorePass;
 
-    @Value("${config.oauth2.publicKey}")
-    private String publicKey;
+    @Value("${config.oauth2.resource.jwt.key-pair.alias}")
+    private String keyPairAlias;
 
     //    @Bean
 //    public UserDetailsService userDetailsService(){
@@ -96,11 +101,10 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
 
-//        LOGGER.info("Initializing JWT with public key: " + publicKey);
-
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(privateKey);
-
+        KeyStoreKeyFactory keyStoreKeyFactory =
+                new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), keyStorePass.toCharArray());
+        converter.setKeyPair(keyStoreKeyFactory.getKeyPair(keyPairAlias));
         return converter;
     }
 

@@ -1,18 +1,23 @@
 package com.snj.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+
+
 
 /*
  *
@@ -22,17 +27,18 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 @EnableResourceServer
 public class CustomResourceConfig extends ResourceServerConfigurerAdapter {
-//    private static final Logger LOGGER = Logger.getLogger(ResourceServerConfiguration.class);
 
-
-    @Value("${config.oauth2.publicKey}")
-    private String publicKey;
-
-    @Value("${config.oauth2.privateKey}")
-    private String privateKey;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Value("${config.oauth2.resource.id}")
     private String resourceId;
+
+
+    @Value("${config.oauth2.resource.jwt.key-pair.store-password}")
+    private String keyStorePass;
+
+    @Value("${config.oauth2.resource.jwt.key-pair.alias}")
+    private String keyPairAlias;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -69,7 +75,9 @@ public class CustomResourceConfig extends ResourceServerConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(privateKey);
+        KeyStoreKeyFactory keyStoreKeyFactory =
+                new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), keyStorePass.toCharArray());
+        converter.setKeyPair(keyStoreKeyFactory.getKeyPair(keyPairAlias));
         return converter;
     }
 
