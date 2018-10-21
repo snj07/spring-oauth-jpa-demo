@@ -9,14 +9,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 /*
-*
-*
-*/
+ *
+ *
+ */
 
 @Configuration
 @EnableResourceServer
@@ -32,18 +33,28 @@ public class CustomResourceConfig extends ResourceServerConfigurerAdapter {
 
     @Value("${config.oauth2.resource.id}")
     private String resourceId;
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.headers()
-                .frameOptions()
-                .disable()
-                .and()
+        http
+                .csrf().disable()
+//                .anonymous().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/register", "/login").permitAll()
+                .antMatchers(HttpMethod.OPTIONS).authenticated()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .antMatchers("/", "/home", "/register", "/login").permitAll()
                 .antMatchers("/oauth/**").authenticated();
 
     }
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) {
+        resources
+                .resourceId(resourceId)
+                .tokenServices(tokenServices())
+                .tokenStore(tokenStore());
+    }
+
     @Bean
     @Primary
     public DefaultTokenServices tokenServices() {
@@ -57,12 +68,8 @@ public class CustomResourceConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
-
-//        LOGGER.info("Initializing JWT with public key: " + publicKey);
-
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey(privateKey);
-
         return converter;
     }
 

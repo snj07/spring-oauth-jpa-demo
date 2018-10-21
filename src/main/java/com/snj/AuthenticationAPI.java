@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Objects;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+//import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 
 /**
  * @author Rohit.Kumar
@@ -64,7 +64,7 @@ public class AuthenticationAPI {
         TokenSession userTokenSession = buildTokenSession(principal, httpHeaders);
         userTokenSession = tokenSessionService.saveUserTokenSessionMapping(userTokenSession);
 
-        LOGGER.info("User "+username+" successfully logged in. User, Token and Session mapping stored."+userTokenSession);
+//        LOGGER.info("User "+username+" successfully logged in. User, Token and Session mapping stored."+userTokenSession);
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Message", "Success");
@@ -95,13 +95,13 @@ public class AuthenticationAPI {
         ValidTokenResponse validMappingResponse = tokenSessionService.isValidTokenSessionMapping(userTokenSession);
         if (validMappingResponse.isValid()) {
 
-            LOGGER.info("User " + username + " has valid token."+validMappingResponse.getTokenSession());
+//            LOGGER.info("User " + username + " has valid token."+validMappingResponse.getTokenSession());
             responseHeaders.add("Message", "Valid Token");
             responseEntity = new ResponseEntity<TokenSession>(validMappingResponse.getTokenSession(), responseHeaders, HttpStatus.OK);
 
         } else {
 
-            LOGGER.info("User " + username + " has invalid token.");
+//            LOGGER.info("User " + username + " has invalid token.");
             responseHeaders.add("Message", "Invalid Token");
             responseEntity = new ResponseEntity<TokenSession>(userTokenSession, responseHeaders, HttpStatus.UNAUTHORIZED);
         }
@@ -125,7 +125,7 @@ public class AuthenticationAPI {
         if (Objects.nonNull(httpHeaders.get("cookie"))) {
             sessionId = httpHeaders.get("cookie").get(0).split(";");
         }else {
-            LOGGER.info("User " + username + " cookie not found. JSessionId not set.");
+//            LOGGER.info("User " + username + " cookie not found. JSessionId not set.");
 
             /**
              * Swagger2 does not support cookie for that putting default sessssion id.

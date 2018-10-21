@@ -18,6 +18,7 @@ public class User {
     private String password;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
     private List<Role> roles;
     
     private boolean active;

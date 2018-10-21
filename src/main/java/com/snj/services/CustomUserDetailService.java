@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
-@Service
+
+@Service("userDetailsService")
 public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
@@ -36,4 +37,5 @@ public class CustomUserDetailService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("No user with "
                         + "the name " + username + "was found in the database"));
     }
+
 }

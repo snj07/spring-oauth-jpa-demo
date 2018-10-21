@@ -2,6 +2,7 @@ package com.snj.config;
 
 import com.snj.services.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,18 +21,20 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 /*
-*  CustomAuthorizationServerConfig generates tokens specific to a client(it can be other spring boot micro service)
-*/
+ *  CustomAuthorizationServerConfig generates tokens specific to a client(it can be other spring boot micro service)
+ */
 
 
 @Configuration
 @EnableAuthorizationServer
 public class CustomAuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    private static final String CLIENT_ID="my-trusted-client";
-    private static final String CLIENT_SECRET="secret";
+    private static final String CLIENT_ID = "client";
+    private static final String CLIENT_SECRET = "secret";
     private static final String GRANT_TYPE_PASSWORD = "password";
-    private static final String GRANT_TYPE_CLIENT_CREDENTIALS ="client_credentials";
+    private static final String GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials";
+    private static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
+    private static final String GRANT_TYPE_AUTH_CODE = "authorization_code";
 
     private static final String SCOPE_READ = "read";
     private static final String SCOPE_WRITE = "write";
@@ -39,11 +42,15 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
 //    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 1*60*60;
 //    static final int REFRESH_TOKEN_VALIDITY_SECONDS = 6*60*60;
 
+    @Qualifier("authenticationManagerBean")
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private CustomUserDetailService userDetailsService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     @Value("${config.oauth2.tokenTimeout}")
     private int ACCESS_TOKEN_VALIDITY_SECONDS;
@@ -57,16 +64,16 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     @Value("${config.oauth2.publicKey}")
     private String publicKey;
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return new CustomUserDetailService();
-    }
+    //    @Bean
+//    public UserDetailsService userDetailsService(){
+//        return new CustomUserDetailService();
+//    }
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
                 .inMemory()
                 .withClient(CLIENT_ID)
-                .authorizedGrantTypes(GRANT_TYPE_CLIENT_CREDENTIALS, GRANT_TYPE_PASSWORD)
+                .authorizedGrantTypes(GRANT_TYPE_CLIENT_CREDENTIALS, GRANT_TYPE_PASSWORD, GRANT_TYPE_REFRESH_TOKEN, GRANT_TYPE_AUTH_CODE)
                 .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
                 .scopes(SCOPE_READ, SCOPE_WRITE, SCOPE_TRUST)
                 .resourceIds("oauth2-resource")
@@ -78,9 +85,10 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints  .authenticationManager(authenticationManager)
+        endpoints.authenticationManager(authenticationManager)
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .tokenStore(tokenStore())
+                .userDetailsService(userDetailsService)
                 .tokenServices(tokenServices())
                 .accessTokenConverter(accessTokenConverter());
     }
@@ -111,13 +119,10 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
         defaultTokenServices.setTokenEnhancer(accessTokenConverter());
         return defaultTokenServices;
     }
+
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.checkTokenAccess("isAuthenticated()")
                 .tokenKeyAccess("permitAll()");
-
-        ;
     }
-
-
 }
